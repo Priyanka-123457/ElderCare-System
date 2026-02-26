@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .overview-grid {
+            display: flex;
+            gap: 25px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .health-box {
+            flex: 1;
+            min-width: 260px;
+            padding: 25px;
+            border-radius: 20px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease;
+        }
+
+        .health-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .emotional-box {
+            background: linear-gradient(135deg, #6A5ACD, #836FFF);
+        }
+
+        .physical-box {
+            background: linear-gradient(135deg, #3AAFA9, #2B7A78);
+        }
+
+        .vital-box {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        }
+
+        .social-box {
+            background: linear-gradient(135deg, #FFB347, #FFCC33);
+        }
+
+        .health-box h1 {
+            font-size: 38px;
+            margin: 8px 0;
+        }
+
+        .risk-alert {
+            margin-top: 20px;
+            background: #FBE9E7;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>ElderCare</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="activities.html">Activities</a>
+        <a href="wellbeing.html">Well-Being</a>
+        <a href="analytics.html">Analytics</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="social.html">Social Interaction</a>
+        <a href="caregiver.html">Caregiver View</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <h1 id="greeting"></h1>
+        <p>Your well-being matters.</p>
+
+        <h2 style="margin-top:30px;">Health Overview</h2>
+
+        <div class="overview-grid">
+
+            <!-- Emotional -->
+            <div class="health-box emotional-box">
+                <h3>🧠 Emotional Health</h3>
+                <h1 id="healthScore">-</h1>
+                <p id="healthStatus"></p>
+            </div>
+
+            <!-- Physical -->
+            <div class="health-box physical-box">
+                <h3>🏃 Physical Activity</h3>
+                <p>Steps: <strong id="stepsValue">-</strong></p>
+                <p>Exercise: <strong id="exerciseValue">-</strong> mins</p>
+                <p>Sleep: <strong id="sleepValue">-</strong> hrs</p>
+                <p>Medicine: <strong id="medicineValue">-</strong></p>
+            </div>
+
+            <!-- Vital -->
+            <div class="health-box vital-box">
+                <h3>❤️ Vital Status</h3>
+                <p>Heart Rate: <strong id="heartValue">-</strong> bpm</p>
+                <p>Blood Pressure: <strong id="bpValue">-</strong></p>
+                <p>Oxygen Level: <strong id="oxygenValue">-</strong>%</p>
+            </div>
+
+            <!-- Social -->
+            <div class="health-box social-box">
+                <h3>🤝 Social Interaction</h3>
+                <p>Calls: <strong id="callsValue">-</strong></p>
+                <p>Family: <strong id="familyValue">-</strong></p>
+                <p>Community: <strong id="communityValue">-</strong></p>
+            </div>
+
+        </div>
+
+        <!-- Risk Alert -->
+        <div id="riskAlert" class="risk-alert"></div>
+
+        <!-- Recommendations -->
+        <h2 style="margin-top:40px;">Smart Recommendations</h2>
+
+        <div class="recommendations">
+            <div class="rec-card green">
+                🧘 Try light exercise
+            </div>
+            <div class="rec-card purple">
+                🎵 Listen to calming music
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- SOS -->
+<button class="floating-sos" onclick="triggerSOS()">🚨 SOS</button>
+
+<!-- Accessibility -->
+<button class="accessibility-btn" onclick="toggleAccessibility()">♿ Accessibility</button>
+
+<div class="accessibility-panel" id="accessPanel">
+    <button onclick="increaseText()">A+ Increase Text</button>
+    <button onclick="decreaseText()">A- Decrease Text</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <button onclick="toggleContrast()">⚡ High Contrast</button>
+</div>
+
+<script>
+
+const userId = localStorage.getItem("userId");
+
+/* Greeting */
+const hour = new Date().getHours();
+let greetingText = "Hello";
+if (hour < 12) greetingText = "Good Morning";
+else if (hour < 18) greetingText = "Good Afternoon";
+else greetingText = "Good Evening";
+
+document.getElementById("greeting").innerText =
+    greetingText + ", Priyanka 🌸";
+
+/* Emotional */
+if (userId) {
+
+    fetch(`http://localhost:8083/api/analytics/loneliness/${userId}`)
+        .then(res => res.json())
+        .then(score => {
+
+            const rounded = Number(score.toFixed(1));
+            document.getElementById("healthScore").innerText = rounded;
+
+            let status = "";
+            let alertMsg = "";
+
+            if (rounded < 2.5) {
+                status = "🟢 Healthy";
+            } 
+            else if (rounded < 3.5) {
+                status = "🟡 Moderate";
+                alertMsg = "Moderate emotional risk detected.";
+            } 
+            else {
+                status = "🔴 High Risk";
+                alertMsg = "⚠ High loneliness detected. Immediate engagement recommended.";
+            }
+
+            document.getElementById("healthStatus").innerText = status;
+            document.getElementById("riskAlert").innerText = alertMsg;
+        });
+
+    /* Physical */
+    fetch(`http://localhost:8083/api/physical/today/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data) return;
+            document.getElementById("stepsValue").innerText = data.steps;
+            document.getElementById("exerciseValue").innerText = data.exerciseMinutes;
+            document.getElementById("sleepValue").innerText = data.sleepHours;
+            document.getElementById("medicineValue").innerText =
+                data.medicineTaken ? "✅ Taken" : "❌ Missed";
+        });
+
+    /* Vital */
+    fetch(`http://localhost:8083/api/vitals/today/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data) return;
+            document.getElementById("heartValue").innerText = data.heartRate;
+            document.getElementById("bpValue").innerText = data.bloodPressure;
+            document.getElementById("oxygenValue").innerText = data.oxygenLevel;
+        });
+
+    /* Social */
+    fetch(`http://localhost:8083/api/social/today/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data) return;
+            document.getElementById("callsValue").innerText = data.callsMade;
+            document.getElementById("familyValue").innerText = data.familyInteractions;
+            document.getElementById("communityValue").innerText = data.communityEvents;
+        });
+}
+
+/* SOS */
+function triggerSOS() {
+    if (!userId) {
+        alert("User not logged in.");
+        return;
+    }
+
+    fetch(`http://localhost:8083/api/emergency?userId=${userId}`, {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("🚨 Emergency alert sent to caregiver!");
+    })
+    .catch(() => {
+        alert("Failed to send emergency alert.");
+    });
+}
+
+/* Accessibility */
+function toggleAccessibility() {
+    const panel = document.getElementById("accessPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+let currentFontSize = 16;
+
+function increaseText() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + "px";
+}
+
+function decreaseText() {
+    currentFontSize -= 2;
+    document.body.style.fontSize = currentFontSize + "px";
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+}
+
+function toggleContrast() {
+    document.body.classList.toggle("high-contrast");
+}
+
+</script>
+
+</body>
+</html>

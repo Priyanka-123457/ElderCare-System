@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ElderCare | Activities</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F4F7F9;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 230px;
+    background: linear-gradient(180deg,#3AAFA9,#2B7A78);
+    color: white;
+    padding: 25px 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.main {
+    flex: 1;
+    padding: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>ElderCare</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="activities.html">Activities</a>
+    <a href="wellbeing.html">Well-Being</a>
+    <a href="analytics.html">Analytics</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="social.html">Social Interaction</a>
+    <a href="caregiver.html">Caregiver View</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<h1>Activities</h1>
+
+<div class="card">
+    <div id="activityList"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+    window.location.href = "login.html";
+}
+
+let attendanceMap = {};
+
+// Load existing attendance
+function loadAttendance() {
+    return fetch(`http://localhost:8083/api/attendance/user/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+            attendanceMap = {};
+            data.forEach(a => {
+                attendanceMap[a.activityId] = a.attended;
+            });
+        });
+}
+
+// Load activities
+function loadActivities() {
+    loadAttendance().then(() => {
+
+        fetch("http://localhost:8083/api/activities")
+        .then(res => res.json())
+        .then(data => {
+
+            const list = document.getElementById("activityList");
+            list.innerHTML = "";
+
+            data.forEach(activity => {
+
+                const div = document.createElement("div");
+                div.className = "activity-item";
+
+                const name = document.createElement("span");
+                name.innerText = activity.name + " (" + activity.category + ")";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+
+                if (attendanceMap[activity.id]) {
+                    checkbox.checked = true;
+                }
+
+                checkbox.addEventListener("change", () => {
+
+                    fetch(`http://localhost:8083/api/attendance?userId=${userId}&activityId=${activity.id}&attended=${checkbox.checked}`, {
+                        method: "POST"
+                    });
+
+                });
+
+                div.appendChild(name);
+                div.appendChild(checkbox);
+
+                list.appendChild(div);
+            });
+
+        });
+
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadActivities);
+</script>
+<button class="accessibility-btn" onclick="toggleAccessibility()">♿ Accessibility</button>
+
+<div class="accessibility-panel" id="accessPanel">
+    <button onclick="increaseText()">A+ Increase Text</button>
+    <button onclick="decreaseText()">A- Decrease Text</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <button onclick="toggleContrast()">⚡ High Contrast</button>
+</div>
+
+<script>
+
+function toggleAccessibility() {
+    const panel = document.getElementById("accessPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// Font size control
+let currentFontSize = 16;
+
+function increaseText() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+function decreaseText() {
+    currentFontSize -= 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+// Dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+}
+
+// High contrast
+function toggleContrast() {
+    document.body.classList.toggle("high-contrast");
+    localStorage.setItem("highContrast", document.body.classList.contains("high-contrast"));
+}
+
+// Restore settings on load
+window.onload = function() {
+
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+        currentFontSize = savedFont;
+        document.body.style.fontSize = currentFontSize + "px";
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    if (localStorage.getItem("highContrast") === "true") {
+        document.body.classList.add("high-contrast");
+    }
+}
+
+</script>
+
+</body>
+</html>

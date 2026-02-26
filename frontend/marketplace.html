@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ElderCare | Marketplace</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F4F7F9;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 230px;
+    background: linear-gradient(180deg,#3AAFA9,#2B7A78);
+    color: white;
+    padding: 25px 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.main {
+    flex: 1;
+    padding: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+input {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #3AAFA9;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.product-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>ElderCare</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="activities.html">Activities</a>
+    <a href="wellbeing.html">Well-Being</a>
+    <a href="analytics.html">Analytics</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="social.html">Social Interaction</a>
+    <a href="caregiver.html">Caregiver View</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<h1>Marketplace</h1>
+
+<!-- Add Product -->
+<div class="card">
+    <h3>Add Product (Elderly Seller)</h3>
+
+    <input type="text" id="productName" placeholder="Product Name">
+    <input type="number" id="productPrice" placeholder="Price">
+    <button onclick="addProduct()">Add Product</button>
+
+    <p id="productStatus"></p>
+</div>
+
+<!-- Seller Income -->
+<div class="card">
+    <h3>Your Total Income</h3>
+    <button onclick="loadIncome()">Load Income</button>
+    <p id="incomeDisplay"></p>
+</div>
+
+<!-- View Products -->
+<div class="card">
+    <h3>All Products</h3>
+    <button onclick="loadProducts()">Load Products</button>
+    <div id="productList"></div>
+</div>
+
+</div>
+</div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+    window.location.href = "login.html";
+}
+
+function addProduct() {
+
+    const name = document.getElementById("productName").value;
+    const price = document.getElementById("productPrice").value;
+
+    fetch("http://localhost:8083/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: name,
+            price: price,
+            sellerId: userId
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        document.getElementById("productStatus").innerText =
+            "Product added successfully ✅";
+        loadProducts();
+    })
+    .catch(() => {
+        document.getElementById("productStatus").innerText =
+            "Error adding product ❌";
+    });
+}
+
+function loadProducts() {
+
+    fetch("http://localhost:8083/api/products")
+    .then(res => res.json())
+    .then(data => {
+
+        const list = document.getElementById("productList");
+        list.innerHTML = "";
+
+        data.forEach(product => {
+            const div = document.createElement("div");
+            div.className = "product-item";
+            div.innerText =
+                product.name + " - ₹" + product.price;
+            list.appendChild(div);
+        });
+
+    });
+}
+
+function loadIncome() {
+
+    fetch(`http://localhost:8083/api/products/seller/${userId}/income`)
+    .then(res => res.text())
+    .then(income => {
+        document.getElementById("incomeDisplay").innerText =
+            "₹ " + income;
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadProducts);
+</script>
+<button class="accessibility-btn" onclick="toggleAccessibility()">♿ Accessibility</button>
+
+<div class="accessibility-panel" id="accessPanel">
+    <button onclick="increaseText()">A+ Increase Text</button>
+    <button onclick="decreaseText()">A- Decrease Text</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <button onclick="toggleContrast()">⚡ High Contrast</button>
+</div>
+
+<script>
+
+function toggleAccessibility() {
+    const panel = document.getElementById("accessPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// Font size control
+let currentFontSize = 16;
+
+function increaseText() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+function decreaseText() {
+    currentFontSize -= 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+// Dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+}
+
+// High contrast
+function toggleContrast() {
+    document.body.classList.toggle("high-contrast");
+    localStorage.setItem("highContrast", document.body.classList.contains("high-contrast"));
+}
+
+// Restore settings on load
+window.onload = function() {
+
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+        currentFontSize = savedFont;
+        document.body.style.fontSize = currentFontSize + "px";
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    if (localStorage.getItem("highContrast") === "true") {
+        document.body.classList.add("high-contrast");
+    }
+}
+
+</script>
+
+</body>
+</html>

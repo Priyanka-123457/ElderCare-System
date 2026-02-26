@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Caregiver Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>ElderCare</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="activities.html">Activities</a>
+        <a href="wellbeing.html">Well-Being</a>
+        <a href="analytics.html">Analytics</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="social.html">Social Interaction</a>
+        <a href="caregiver.html">Caregiver View</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <h1>Caregiver Monitoring Panel 👩‍⚕️</h1>
+        <p>Active Emergency Alerts:</p>
+
+        <div id="emergencyContainer" style="margin-top:20px;"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+function checkEmergencies() {
+    fetch("http://localhost:8083/api/emergency/active")
+        .then(res => res.json())
+        .then(alerts => {
+
+            const container = document.getElementById("emergencyContainer");
+            container.innerHTML = "";
+
+            if (alerts.length === 0) {
+                container.innerHTML = "<p style='color:green;'>No active emergencies.</p>";
+                return;
+            }
+
+            alerts.forEach(alert => {
+
+                const box = document.createElement("div");
+                box.style.background = "#ff4d4d";
+                box.style.color = "white";
+                box.style.padding = "15px";
+                box.style.marginBottom = "10px";
+                box.style.borderRadius = "10px";
+                box.style.fontWeight = "bold";
+
+                box.innerHTML = `
+                    🚨 EMERGENCY from User ID: ${alert.userId}
+                    <br>
+                    Time: ${alert.timestamp}
+                `;
+
+                container.appendChild(box);
+            });
+        });
+}
+
+// Check every 5 seconds
+setInterval(checkEmergencies, 5000);
+
+// Load immediately
+checkEmergencies();
+
+</script>
+<button class="accessibility-btn" onclick="toggleAccessibility()">♿ Accessibility</button>
+
+<div class="accessibility-panel" id="accessPanel">
+    <button onclick="increaseText()">A+ Increase Text</button>
+    <button onclick="decreaseText()">A- Decrease Text</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <button onclick="toggleContrast()">⚡ High Contrast</button>
+</div>
+
+<script>
+
+function toggleAccessibility() {
+    const panel = document.getElementById("accessPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// Font size control
+let currentFontSize = 16;
+
+function increaseText() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+function decreaseText() {
+    currentFontSize -= 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+// Dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+}
+
+// High contrast
+function toggleContrast() {
+    document.body.classList.toggle("high-contrast");
+    localStorage.setItem("highContrast", document.body.classList.contains("high-contrast"));
+}
+
+// Restore settings on load
+window.onload = function() {
+
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+        currentFontSize = savedFont;
+        document.body.style.fontSize = currentFontSize + "px";
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    if (localStorage.getItem("highContrast") === "true") {
+        document.body.classList.add("high-contrast");
+    }
+}
+
+</script>
+
+</body>
+</html>

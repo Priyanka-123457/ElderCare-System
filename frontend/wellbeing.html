@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ElderCare | Well-Being</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #F4F7F9;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+    width: 230px;
+    background: linear-gradient(180deg,#3AAFA9,#2B7A78);
+    color: white;
+    padding: 25px 20px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.main {
+    flex: 1;
+    padding: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    margin-bottom: 25px;
+}
+
+input {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #3AAFA9;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>ElderCare</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="activities.html">Activities</a>
+    <a href="wellbeing.html">Well-Being</a>
+    <a href="analytics.html">Analytics</a>
+    <a href="marketplace.html">Marketplace</a>
+    <a href="social.html">Social Interaction</a>
+    <a href="caregiver.html">Caregiver View</a>
+    <a href="login.html">Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+<h1>Well-Being Tracker</h1>
+
+<div class="card">
+    <h3>Submit Today's Well-Being</h3>
+
+    <input type="text" id="moodInput" placeholder="Mood (Happy / Calm / Sad)">
+    <input type="number" id="lonelinessInput" min="1" max="5" placeholder="Loneliness (1-5)">
+    <button onclick="submitWellBeing()">Submit</button>
+
+    <p id="statusMessage"></p>
+</div>
+
+<div class="card">
+    <h3>History</h3>
+    <button onclick="loadHistory()">Load History</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Mood</th>
+                <th>Loneliness Score</th>
+            </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+    </table>
+</div>
+
+</div>
+</div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+    window.location.href = "login.html";
+}
+
+function submitWellBeing() {
+
+    const mood = document.getElementById("moodInput").value;
+    const lonelinessScore = document.getElementById("lonelinessInput").value;
+
+    fetch(`http://localhost:8083/api/wellbeing/user/${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            mood: mood,
+            lonelinessScore: lonelinessScore
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        document.getElementById("statusMessage").innerText =
+            "Saved successfully ✅";
+            window.location.href = "dashboard.html";
+        loadHistory();
+    })
+    .catch(() => {
+        document.getElementById("statusMessage").innerText =
+            "Error saving ❌";
+    });
+}
+
+function loadHistory() {
+
+    fetch(`http://localhost:8083/api/wellbeing/user/${userId}`)
+    .then(res => res.json())
+    .then(data => {
+
+        const table = document.getElementById("historyTable");
+        table.innerHTML = "";
+
+        data.forEach(entry => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${entry.date}</td>
+                <td>${entry.mood}</td>
+                <td>${entry.lonelinessScore}</td>
+            `;
+
+            table.appendChild(row);
+        });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadHistory);
+</script>
+<button class="accessibility-btn" onclick="toggleAccessibility()">♿ Accessibility</button>
+
+<div class="accessibility-panel" id="accessPanel">
+    <button onclick="increaseText()">A+ Increase Text</button>
+    <button onclick="decreaseText()">A- Decrease Text</button>
+    <button onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <button onclick="toggleContrast()">⚡ High Contrast</button>
+</div>
+
+<script>
+
+function toggleAccessibility() {
+    const panel = document.getElementById("accessPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// Font size control
+let currentFontSize = 16;
+
+function increaseText() {
+    currentFontSize += 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+function decreaseText() {
+    currentFontSize -= 2;
+    document.body.style.fontSize = currentFontSize + "px";
+    localStorage.setItem("fontSize", currentFontSize);
+}
+
+// Dark mode
+function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+}
+
+// High contrast
+function toggleContrast() {
+    document.body.classList.toggle("high-contrast");
+    localStorage.setItem("highContrast", document.body.classList.contains("high-contrast"));
+}
+
+// Restore settings on load
+window.onload = function() {
+
+    const savedFont = localStorage.getItem("fontSize");
+    if (savedFont) {
+        currentFontSize = savedFont;
+        document.body.style.fontSize = currentFontSize + "px";
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+    if (localStorage.getItem("highContrast") === "true") {
+        document.body.classList.add("high-contrast");
+    }
+}
+
+</script>
+</body>
+</html>

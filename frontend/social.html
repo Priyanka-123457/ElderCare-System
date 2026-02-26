@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Social Interaction</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            max-width: 500px;
+        }
+
+        .form-card input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .form-card button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #FFB347;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-card button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>ElderCare</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="activities.html">Activities</a>
+        <a href="wellbeing.html">Well-Being</a>
+        <a href="analytics.html">Analytics</a>
+        <a href="marketplace.html">Marketplace</a>
+        <a href="social.html">Social Interaction</a>
+        <a href="caregiver.html">Caregiver View</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <h1>🤝 Update Social Interaction</h1>
+        <p>Track today's social engagement.</p>
+
+        <div class="form-card">
+
+            <label>Calls Made Today</label>
+            <input type="number" id="callsInput" min="0">
+
+            <label>Family Interactions</label>
+            <input type="number" id="familyInput" min="0">
+
+            <label>Community Events Attended</label>
+            <input type="number" id="communityInput" min="0">
+
+            <button onclick="saveSocial()">Save</button>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+const userId = localStorage.getItem("userId");
+
+if (!userId) {
+    window.location.href = "index.html";
+}
+
+function saveSocial() {
+
+    const calls = document.getElementById("callsInput").value;
+    const family = document.getElementById("familyInput").value;
+    const community = document.getElementById("communityInput").value;
+
+    fetch("http://localhost:8083/api/social", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            userId: userId,
+            callsMade: parseInt(calls),
+            familyInteractions: parseInt(family),
+            communityEvents: parseInt(community)
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("Social interaction updated successfully ✅");
+        window.location.href = "dashboard.html";
+    })
+    .catch(() => {
+        alert("Failed to update social interaction ❌");
+    });
+}
+
+</script>
+
+</body>
+</html>

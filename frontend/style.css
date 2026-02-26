@@ -1,0 +1,333 @@
+/* ===== ElderCare Premium UI System ===== */
+
+:root {
+    --primary: #3AAFA9;
+    --primary-dark: #2B7A78;
+    --accent: #6C63FF;
+    --bg-light: #F4F7F9;
+    --card-bg: #ffffff;
+    --text-dark: #222;
+    --text-muted: #666;
+}
+
+/* Page Base */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Smooth fade-in */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sidebar */
+.sidebar {
+    width: 230px;
+    background: linear-gradient(180deg,var(--primary),var(--primary-dark));
+    color: white;
+    padding: 25px 20px;
+    transition: all 0.3s ease;
+}
+
+.sidebar a {
+    display: block;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.25s ease;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(4px);
+}
+
+/* Cards */
+.card {
+    background: var(--card-bg);
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+
+/* Buttons */
+button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+button:hover {
+    background: var(--primary-dark);
+    transform: scale(1.03);
+}
+
+/* Inputs */
+input, select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: all 0.2s ease;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(58,175,169,0.2);
+}
+
+/* Health Card Animation */
+.health-card {
+    transition: all 0.3s ease;
+}
+
+.health-card:hover {
+    transform: scale(1.02);
+}
+
+/* Recommendation Cards */
+.rec-card {
+    transition: all 0.3s ease;
+}
+
+.rec-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+/* Health Card */
+.health-card {
+    background: linear-gradient(135deg, #6a5acd, #7b68ee);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 350px;
+    margin-top: 20px;
+}
+
+.health-card h3 {
+    margin-bottom: 10px;
+}
+
+/* Risk Alert */
+.risk-alert {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f3e5d1;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+/* Recommendation Cards */
+.recommendations {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.rec-card {
+    padding: 20px;
+    border-radius: 15px;
+    color: white;
+    font-weight: bold;
+    width: 250px;
+    text-align: center;
+}
+
+.rec-card.green {
+    background: #66bb6a;
+}
+
+.rec-card.purple {
+    background: #7b68ee;
+}
+
+/* Floating SOS */
+.floating-sos {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: 0.3s;
+}
+
+.floating-sos:hover {
+    background: #c62828;
+}
+/* Layout Reset */
+body {
+    margin: 0;
+    background: #f4f6f9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: linear-gradient(180deg, #3aa39f, #2f7d79);
+    padding: 30px 20px;
+    color: white;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin: 18px 0;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    padding-left: 10px;
+    opacity: 0.8;
+}
+
+/* Main Content */
+.main {
+    margin-left: 250px;   /* EXACT width of sidebar */
+    padding: 50px 60px;
+}
+/* ===== Accessibility Panel ===== */
+
+.accessibility-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: #3AAFA9;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+.accessibility-panel {
+    position: fixed;
+    bottom: 80px;
+    left: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 9999;
+}
+
+.accessibility-panel button {
+    display: block;
+    margin-bottom: 10px;
+    width: 160px;
+}
+
+/* Dark Mode */
+.dark-mode {
+    background: #1e1e1e !important;
+    color: #f5f5f5 !important;
+}
+
+.dark-mode .card {
+    background: #2c2c2c !important;
+}
+
+/* High Contrast */
+.high-contrast {
+    background: black !important;
+    color: yellow !important;
+}
+
+.high-contrast .card {
+    background: black !important;
+    border: 2px solid yellow;
+}
+.overview-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.overview-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    width: 300px;
+}
+/* Overview Layout */
+.overview-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Base Health Card */
+.health-box {
+    flex: 1;
+    padding: 30px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.health-box:hover {
+    transform: translateY(-5px);
+}
+
+/* Emotional Card (Purple Gradient) */
+.emotional-box {
+    background: linear-gradient(135deg, #6A5ACD, #836FFF);
+}
+
+/* Physical Card (Green Gradient) */
+.physical-box {
+    background: linear-gradient(135deg, #3AAFA9, #2B7A78);
+}
+
+/* Text Styling */
+.health-box h1 {
+    font-size: 42px;
+    margin: 10px 0;
+}
+
+.health-box p {
+    font-size: 16px;
+}
+.vital-box {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+}
+.social-box {
+    background: linear-gradient(135deg, #FFB347, #FFCC33);
+}

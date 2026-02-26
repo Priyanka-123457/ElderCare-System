@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Login</title>
+
+    <style>
+    body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+        url("images/elderly.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 20px;
+        width: 360px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .login-card h1 {
+        margin-bottom: 5px;
+        color: #2B7A78;
+        font-size: 28px;
+    }
+
+    .login-card p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: #2B7A78;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s ease;
+    }
+
+    button:hover {
+        background: #205e5c;
+        transform: translateY(-3px);
+    }
+
+    .footer-text {
+        margin-top: 15px;
+        font-size: 12px;
+        color: #888;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="login-card">
+    <h1>ElderCare</h1>
+    <p>Care • Connection • Well-Being</p>
+
+    <input type="number" id="userIdInput" placeholder="Enter User ID">
+
+    <select id="roleSelect">
+        <option disabled selected>Select Role</option>
+        <option>Elderly</option>
+        <option>Family</option>
+        <option>Buyer</option>
+        <option>Admin</option>
+    </select>
+
+    <button onclick="login()">Login</button>
+
+    <div class="footer-text">
+        Final Year Engineering Project
+    </div>
+</div>
+
+<script>
+function login() {
+
+    const userId = document.getElementById("userIdInput").value;
+    const role = document.getElementById("roleSelect").value;
+
+    if (!userId || role === "Select Role") {
+        alert("Please enter User ID and select role");
+        return;
+    }
+
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("role", role);
+
+    window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
