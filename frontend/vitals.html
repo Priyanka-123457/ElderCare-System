@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Vital Status</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <h2>ElderCare</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="physical.html">Physical Activity</a>
+        <a href="vitals.html">Vital Status</a>
+        <a href="social.html">Social Interaction</a>
+        <a href="caregiver.html">Caregiver View</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>❤️ Vital Status Update</h1>
+
+        <div class="form-card">
+            <label>Heart Rate (bpm)</label>
+            <input type="number" id="heartRate">
+
+            <label>Blood Pressure</label>
+            <input type="text" id="bp" placeholder="120/80">
+
+            <label>Oxygen Level (%)</label>
+            <input type="number" id="oxygen">
+
+            <button onclick="saveVitals()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+function saveVitals() {
+
+    fetch("http://localhost:8083/api/vitals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userId: userId,
+            heartRate: document.getElementById("heartRate").value,
+            bloodPressure: document.getElementById("bp").value,
+            oxygenLevel: document.getElementById("oxygen").value
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("✅ Vital data saved!");
+        window.location.href = "dashboard.html";
+    });
+}
+</script>
+
+</body>
+</html>

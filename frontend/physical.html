@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ElderCare | Physical Health</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+        <h2>ElderCare</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="physical.html">Physical Activity</a>
+        <a href="vitals.html">Vital Status</a>
+        <a href="social.html">Social Interaction</a>
+        <a href="caregiver.html">Caregiver View</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <div class="main">
+        <h1>🏃 Physical Health Update</h1>
+
+        <div class="form-card">
+            <label>Steps Today</label>
+            <input type="number" id="steps">
+
+            <label>Exercise Minutes</label>
+            <input type="number" id="exercise">
+
+            <label>Sleep Hours</label>
+            <input type="number" step="0.1" id="sleep">
+
+            <label>Medicine Taken?</label>
+            <select id="medicine">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+
+            <button onclick="savePhysical()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const userId = localStorage.getItem("userId");
+
+function savePhysical() {
+
+    fetch("http://localhost:8083/api/physical", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            userId: userId,
+            steps: document.getElementById("steps").value,
+            exerciseMinutes: document.getElementById("exercise").value,
+            sleepHours: document.getElementById("sleep").value,
+            medicineTaken: document.getElementById("medicine").value === "true"
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("✅ Physical data saved!");
+        window.location.href = "dashboard.html";
+    });
+}
+</script>
+
+</body>
+</html>
